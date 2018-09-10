@@ -1,0 +1,70 @@
+buildscript {
+
+  ext {
+    springBootVersion = '2.0.3.RELEASE'
+  }
+
+  repositories {
+    mavenCentral()
+    jcenter()
+  }
+
+  dependencies {
+    //Check for the latest version here: http://plugins.gradle.org/plugin/com.jfrog.artifactory
+    classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    classpath "com.commercehub.gradle.plugin:gradle-avro-plugin:0.14.2"
+  }
+}
+
+
+/*plugins {
+  id "com.commercehub.gradle.plugin.avro-base"
+}*/
+
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: "com.commercehub.gradle.plugin.avro-base"
+apply plugin: 'org.springframework.boot'
+
+
+dependencyManagement {
+  imports {
+    mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+
+    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Finchley.SR1'
+  }
+}
+
+sourceSets.main.java.srcDir new File(buildDir, 'generated-sources')
+idea {
+  module {
+    // Marks the already(!) added srcDir as "generated"
+    generatedSourceDirs += file("$buildDir/generated-sources")
+  }
+}
+
+task generateAvro(type: com.commercehub.gradle.plugin.avro.GenerateAvroJavaTask) {
+  source("src/main/resources/avro/")
+  outputDir = file("$buildDir/generated-sources")
+}
+
+compileJava.source(generateAvro.outputs)
+
+
+group = 'com.sociumtrade.platform'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+dependencies {
+  compile('org.apache.avro:avro:1.8.2')
+  compile('org.springframework.cloud:spring-cloud-stream-schema')
+  compile('org.springframework.cloud:spring-cloud-stream-binder-kafka')
+}
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+  jcenter()
+  maven {url 'http://packages.confluent.io/maven/'}
+}

@@ -1,0 +1,16 @@
+spring:
+  jackson:
+    default-property-inclusion: non_null
+
+  cloud:
+    stream:
+      schemaRegistryClient:
+        endpoint: http://localhost:9081
+      default:
+        contentType: application/*+avro
+      bindings:
+        account-created:
+          destination: account-created
+      kafka.binder:
+        brokers: localhost:9092
+      schema.avro.shemaLocations: classpath*:avro/example.avsc

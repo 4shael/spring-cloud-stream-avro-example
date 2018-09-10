@@ -1,0 +1,15 @@
+{
+  "namespace": "com.example.avro",
+  "type": "record",
+  "name": "AccountTO",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "email",
+      "type": "string"
+    }
+  ]
+}
